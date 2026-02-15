@@ -13,44 +13,6 @@
   min-width: 0;
 }
 
-.editor-mobile-toggle {
-  display: none;
-}
-
-.editor-toggle-btn {
-  flex: 1;
-  padding: 12px 20px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  font-family: inherit;
-  color: var(--muted);
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
-}
-
-.editor-toggle-btn:first-child {
-  border-radius: 12px 0 0 12px;
-  border-right: none;
-}
-
-.editor-toggle-btn:last-child {
-  border-radius: 0 12px 12px 0;
-}
-
-.editor-toggle-btn--active {
-  color: var(--text);
-  background: var(--panel);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-}
-
-.editor-toggle-btn--active + .editor-toggle-btn {
-  border-left: 1px solid var(--line);
-}
-
 .editor-mobile-save-bar {
   display: none;
 }
@@ -63,16 +25,24 @@
   min-width: 0;
 }
 
+/* Desktop: left column = form, right column = sidebar preview */
+@media (min-width: 901px) {
+  .editor-mobile-toggle {
+    display: none;
+  }
+  .editor-preview-inline {
+    display: none;
+  }
+}
+
+/* Mobile: single column, live preview under Basic info (no toggle) */
 @media (max-width: 900px) {
   .editor-mobile-toggle {
-    display: flex;
-    margin-bottom: 24px;
-    gap: 0;
-    border-radius: 14px;
-    border: 1px solid var(--line);
-    background: color-mix(in srgb, var(--panel) 90%);
-    overflow: hidden;
-    padding: 4px;
+    display: none;
+  }
+
+  .editor-preview-sidebar {
+    display: none;
   }
 
   .editor-grid {
@@ -80,28 +50,11 @@
     gap: 40px;
   }
 
-  .editor-controls--edit {
-    display: none;
-  }
-
-  .editor-controls--edit.editor-controls--visible {
-    display: flex;
-  }
-
-  .editor-preview {
-    display: none;
-    order: 0;
-  }
-
-  .editor-preview--visible {
-    display: block;
-  }
-
   .editor-save-desktop {
     display: none;
   }
 
-  .editor-mobile-save-bar.editor-mobile-save-bar--visible {
+  .editor-mobile-save-bar {
     display: block;
     position: sticky;
     bottom: 12px;
@@ -117,12 +70,6 @@
 
   .editor-mobile-save-bar .editor-save {
     width: 100%;
-  }
-}
-
-@media (min-width: 901px) {
-  .editor-mobile-toggle {
-    display: none !important;
   }
 }
 .auth-card { margin-top: 48px; }

@@ -204,6 +204,7 @@ export default function Editor() {
         </div>
         <div className="editor-grid">
           <div className={`editor-controls editor-controls--edit ${view === "edit" ? "editor-controls--visible" : ""}`}>
+            <div className="editor-controls-inner">
             {message && (
               <div
                 className="editor-message"
@@ -297,6 +298,32 @@ export default function Editor() {
                 </div>
               </div>
             </div>
+
+            <aside className="editor-preview editor-preview-inline">
+              <span className="editor-preview-label">Live preview</span>
+              <div className="editor-preview-inner">
+                <div className={`editor-preview-hero heroCover ${heroImage ? "" : "heroCover--placeholder"}`} style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}>
+                  <div className="heroOverlay" />
+                  <div className="heroInner">
+                    <h2 className="editor-preview-hero-name">{name || "Name"}</h2>
+                    <p className="editor-preview-hero-meta">{role || "Role"} · {theme}</p>
+                  </div>
+                </div>
+                <div className="editor-preview-main">
+                  <p className="editor-preview-bio">{bio || "Add a short bio."}</p>
+                  <div className="editor-preview-grid">
+                    {previewWorks.length > 0 ? previewWorks.map((w, i) => (
+                      <div key={i} className="editor-preview-work">
+                        <div className="editor-preview-work-thumb" style={w.image ? { backgroundImage: `url(${w.image})`, backgroundSize: "cover" } : undefined} />
+                        {w.title ? <div className="editor-preview-work-title">{w.title}</div> : null}
+                      </div>
+                    )) : [1, 2, 3].map((i) => (
+                      <div key={i} className="editor-preview-work"><div className="editor-preview-work-thumb" /></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </aside>
 
             <div className="editor-card">
               <h3 className="editor-card-title">Selected work</h3>
@@ -416,9 +443,10 @@ export default function Editor() {
                 </button>
               </div>
             </div>
+            </div>
           </div>
 
-          <aside className={`editor-preview ${view === "preview" ? "editor-preview--visible" : ""}`}>
+          <aside className={`editor-preview editor-preview-sidebar ${view === "preview" ? "editor-preview--visible" : ""}`}>
             <span className="editor-preview-label">Live preview</span>
             <div className="editor-preview-inner">
               <div
