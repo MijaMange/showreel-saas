@@ -1,6 +1,9 @@
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "./supabaseClient";
 import type { Theme } from "./profileStore";
+import type { ProfileLink } from "./db";
+
+export type { ProfileLink };
 
 export interface DbProfile {
   id: string;
@@ -12,7 +15,11 @@ export interface DbProfile {
   theme: string;
   location?: string | null;
   hero_image?: string | null;
+  hero_style?: string | null;
+  works_layout?: string | null;
+  availability?: string | null;
   tags?: string[];
+  links?: ProfileLink[];
   is_published: boolean;
   created_at?: string;
   updated_at?: string;
@@ -27,9 +34,13 @@ export interface ApiProfile {
   theme: Theme;
   location?: string;
   heroImage?: string;
+  hero_style?: string;
+  works_layout?: string;
+  availability?: string;
   tags?: string[];
+  links?: ProfileLink[];
   is_published: boolean;
-  works?: { title: string; image: string }[];
+  works?: { title: string; image: string; link?: string }[];
   socials?: { instagram?: string; linkedin?: string; x?: string };
 }
 
@@ -54,7 +65,11 @@ function dbToApi(p: DbProfile): ApiProfile {
     theme: p.theme as Theme,
     location: p.location ?? undefined,
     heroImage: p.hero_image ?? undefined,
+    hero_style: p.hero_style ?? "cover",
+    works_layout: p.works_layout ?? "grid",
+    availability: p.availability ?? undefined,
     tags: p.tags?.length ? p.tags : undefined,
+    links: p.links?.length ? p.links : undefined,
     is_published: p.is_published,
   };
 }
@@ -121,7 +136,11 @@ export async function updateMyProfile(fields: {
   is_published?: boolean;
   location?: string;
   hero_image?: string;
+  hero_style?: string;
+  works_layout?: string;
+  availability?: string;
   tags?: string[];
+  links?: ProfileLink[];
 }): Promise<ApiProfile> {
   const user = await getSessionUser();
   if (!user) throw new Error("Not authenticated");
@@ -132,18 +151,42 @@ export async function updateMyProfile(fields: {
   if (fields.bio !== undefined) updates.bio = fields.bio;
   if (fields.theme !== undefined) updates.theme = fields.theme;
   if (fields.is_published !== undefined) updates.is_published = fields.is_published;
-  if (fields.location !== undefined) updates.location = fields.location;
+  if (fields.location !== undefined) updates.location = fields.location ?? null;
   if (fields.hero_image !== undefined) updates.hero_image = fields.hero_image?.trim() || null;
+  if (fields.hero_style !== undefined) updates.hero_style = fields.hero_style;
+  if (fields.works_layout !== undefined) updates.works_layout = fields.works_layout;
+  if (fields.availability !== undefined) updates.availability = fields.availability ?? null;
   if (fields.tags !== undefined) updates.tags = fields.tags;
+  if (fields.links !== undefined) updates.links = fields.links;
 
-  const { data, error } = await supabase
+  const baseUpdates: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  if (fields.name !== undefined) baseUpdates.name = fields.name;
+  if (fields.role !== undefined) baseUpdates.role = fields.role;
+  if (fields.bio !== undefined) baseUpdates.bio = fields.bio;
+  if (fields.theme !== undefined) baseUpdates.theme = fields.theme;
+  if (fields.is_published !== undefined) baseUpdates.is_published = fields.is_published;
+  if (fields.location !== undefined) baseUpdates.location = fields.location ?? null;
+  if (fields.hero_image !== undefined) baseUpdates.hero_image = fields.hero_image?.trim() || null;
+  if (fields.tags !== undefined) baseUpdates.tags = fields.tags;
+
+  let res = await supabase
     .from("profiles")
     .update(updates)
     .eq("user_id", user.id)
     .select()
     .limit(1);
 
-  if (error) throw error;
+  if (res.error) {
+    res = await supabase
+      .from("profiles")
+      .update(baseUpdates)
+      .eq("user_id", user.id)
+      .select()
+      .limit(1);
+  }
+
+  if (res.error) throw res.error;
+  const data = res.data;
   const row = Array.isArray(data) ? data[0] : data;
   if (!row) throw new Error("Profile could not be updated.");
   return dbToApi(row as DbProfile);
@@ -163,7 +206,7 @@ export async function setPublish(isPublished: boolean): Promise<void> {
 
 export async function replaceWorks(
   profileId: string,
-  works: { title: string; image: string }[]
+  works: { title: string; image: string; link?: string }[]
 ): Promise<{ title: string; image: string }[]> {
   const { error: delError } = await supabase
     .from("works")
@@ -172,19 +215,26 @@ export async function replaceWorks(
 
   if (delError) throw delError;
 
-  const rows = works
-    .map((w, i) => ({
-      profile_id: profileId,
-      title: (w.title || "").trim() || "Untitled",
-      image: (w.image || "").trim() || "https://placehold.co/600x400?text=+",
-      sort_order: i,
-    }));
+  if (works.length === 0) return [];
 
-  if (rows.length === 0) return [];
+  const rowsBase = works.map((w, i) => ({
+    profile_id: profileId,
+    title: (w.title || "").trim() || "Untitled",
+    image: (w.image || "").trim() || "https://placehold.co/600x400?text=+",
+    sort_order: i,
+  }));
 
-  const { data, error: insError } = await supabase.from("works").insert(rows).select("title, image");
-  if (insError) throw insError;
-  return (data ?? []) as { title: string; image: string }[];
+  const rowsWithLink = works.map((w, i) => ({
+    ...rowsBase[i]!,
+    link: (w.link || "").trim() || null,
+  }));
+
+  let insRes = await supabase.from("works").insert(rowsWithLink).select("title, image");
+  if (insRes.error) {
+    insRes = await supabase.from("works").insert(rowsBase).select("title, image");
+  }
+  if (insRes.error) throw insRes.error;
+  return (insRes.data ?? []) as { title: string; image: string }[];
 }
 
 export async function getPublicProfileBySlug(slug: string): Promise<ApiProfile | null> {
@@ -206,26 +256,26 @@ export async function getPublicProfileBySlug(slug: string): Promise<ApiProfile |
   return apiProfile;
 }
 
-export async function getPublicWorks(profileId: string): Promise<{ title: string; image: string }[]> {
+export async function getPublicWorks(profileId: string): Promise<{ title: string; image: string; link?: string }[]> {
   const { data, error } = await supabase
     .from("works")
-    .select("title, image")
+    .select("*")
     .eq("profile_id", profileId)
     .order("sort_order", { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as { title: string; image: string }[];
+  return ((data ?? []) as { title: string; image: string; link?: string }[]).map((w) => ({ title: w.title, image: w.image, link: w.link }));
 }
 
-export async function getMyWorks(profileId: string): Promise<{ title: string; image: string }[]> {
+export async function getMyWorks(profileId: string): Promise<{ title: string; image: string; link?: string }[]> {
   const { data, error } = await supabase
     .from("works")
-    .select("title, image")
+    .select("*")
     .eq("profile_id", profileId)
     .order("sort_order", { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as { title: string; image: string }[];
+  return ((data ?? []) as { title: string; image: string; link?: string }[]).map((w) => ({ title: w.title, image: w.image, link: w.link }));
 }
 
 export async function getMyProfileBySlug(slug: string): Promise<ApiProfile | null> {

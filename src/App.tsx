@@ -3,7 +3,7 @@ import { Layout } from "./app/layout";
 import { MarketingLayout } from "./app/layout/MarketingLayout";
 import { AuthProvider } from "./app/auth/AuthProvider";
 import { ProtectedRoute } from "./app/auth/ProtectedRoute";
-import { Landing, Editor, Profile, Pro, Discover, Auth, Me } from "./pages";
+import { Landing, Editor, Profile, Pro, Discover, Auth, Me, NotFound } from "./pages";
 
 function App() {
   return (
@@ -30,6 +30,7 @@ function App() {
         <Route path="/discover" element={<Navigate to="/app/discover" replace />} />
         <Route path="/editor" element={<Navigate to="/app/editor" replace />} />
         <Route path="/pro" element={<Navigate to="/app/pro" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AuthProvider>
   );
