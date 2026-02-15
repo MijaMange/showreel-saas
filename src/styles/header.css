@@ -1,6 +1,6 @@
 :root {
-  --container-max: 1120px;
-  --pad-x: 20px;
+  --container-max: 1240px;
+  --pad-x: 24px;
   --pad-y: 16px;
   --gap-1: 8px;
   --gap-2: 12px;
@@ -19,6 +19,7 @@
   left: 0;
   right: 0;
   z-index: 50;
+  padding-top: env(safe-area-inset-top, 0);
   background: var(--panel);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -41,7 +42,7 @@
   color: var(--text);
   text-decoration: none;
   font-family: var(--font-mono);
-  font-size: 1rem;
+  font-size: 1.05rem;
   letter-spacing: 0.08em;
   text-transform: lowercase;
 }

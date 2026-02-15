@@ -2,13 +2,57 @@
 .editor {
   min-height: 100vh;
   padding: 48px 0 64px;
+  min-width: 0;
 }
 
 .editor-container {
-  max-width: 1120px;
+  max-width: var(--container-max, 1240px);
   margin: 0 auto;
   padding-left: var(--pad-x, 20px);
   padding-right: var(--pad-x, 20px);
+  min-width: 0;
+}
+
+.editor-mobile-toggle {
+  display: none;
+}
+
+.editor-toggle-btn {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.editor-toggle-btn:first-child {
+  border-radius: 12px 0 0 12px;
+  border-right: none;
+}
+
+.editor-toggle-btn:last-child {
+  border-radius: 0 12px 12px 0;
+}
+
+.editor-toggle-btn--active {
+  color: var(--text);
+  background: var(--panel);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.editor-toggle-btn--active + .editor-toggle-btn {
+  border-left: 1px solid var(--line);
+}
+
+.editor-mobile-save-bar {
+  display: none;
 }
 
 .editor-grid {
@@ -16,15 +60,69 @@
   grid-template-columns: 1fr 1fr;
   gap: 48px;
   align-items: start;
+  min-width: 0;
 }
 
 @media (max-width: 900px) {
+  .editor-mobile-toggle {
+    display: flex;
+    margin-bottom: 24px;
+    gap: 0;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--panel) 90%);
+    overflow: hidden;
+    padding: 4px;
+  }
+
   .editor-grid {
     grid-template-columns: 1fr;
     gap: 40px;
   }
+
+  .editor-controls--edit {
+    display: none;
+  }
+
+  .editor-controls--edit.editor-controls--visible {
+    display: flex;
+  }
+
   .editor-preview {
-    order: -1;
+    display: none;
+    order: 0;
+  }
+
+  .editor-preview--visible {
+    display: block;
+  }
+
+  .editor-save-desktop {
+    display: none;
+  }
+
+  .editor-mobile-save-bar.editor-mobile-save-bar--visible {
+    display: block;
+    position: sticky;
+    bottom: 12px;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    margin-top: 24px;
+    padding-top: 16px;
+    background: linear-gradient(to top, var(--panel) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 14px;
+    border: 1px solid var(--line);
+  }
+
+  .editor-mobile-save-bar .editor-save {
+    width: 100%;
+  }
+}
+
+@media (min-width: 901px) {
+  .editor-mobile-toggle {
+    display: none !important;
   }
 }
 .auth-card { margin-top: 48px; }
@@ -44,6 +142,7 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
+  min-width: 0;
 }
 
 .editor-card {

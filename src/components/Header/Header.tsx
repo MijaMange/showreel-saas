@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { PortfolyLogo } from "../Brand/PortfolyLogo";
 import { getProfileBySlug } from "../../app/profileStore";
 import { useAuth } from "../../app/auth/AuthProvider";
@@ -13,13 +13,15 @@ interface HeaderProps {
 
 export const Header = forwardRef<HTMLElement, HeaderProps>(function Header({ variant }, ref) {
   const { session, signOut } = useAuth();
+  const { pathname } = useLocation();
+  const isEditor = pathname === "/app/editor";
   const currentTheme =
-    variant === "app" ? getProfileBySlug("anna-example").theme : null;
+    variant === "app" && isEditor ? getProfileBySlug("anna-example").theme : null;
 
   return (
     <header ref={ref} className="header topbar">
       <div className="header-container">
-        <Link to="/" className="header-brand">
+        <Link to="/" className="header-brand" onClick={() => window.scrollTo(0, 0)}>
           <PortfolyLogo size={22} className="header-logo" />
         </Link>
 
@@ -101,9 +103,11 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(function Header({ var
                   </Link>
                 </>
               )}
-              <span className="header-mono">
-                Theme: {currentTheme}
-              </span>
+              {currentTheme && (
+                <span className="header-mono">
+                  Theme: {currentTheme}
+                </span>
+              )}
             </>
           )}
         </div>

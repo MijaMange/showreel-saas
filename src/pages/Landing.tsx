@@ -1,23 +1,21 @@
 import { Link } from "react-router-dom";
 import { PortfolyLogo } from "../components/Brand/PortfolyLogo";
-import { getExampleForDisplay } from "../app/profileStore";
 import { PricingSection } from "../sections/PricingSection";
 import { AboutSection } from "../sections/AboutSection";
 
 export function Landing() {
-  const anna = getExampleForDisplay("anna-example");
-  const previewWorks = anna.works?.slice(0, 3) ?? [];
-
   return (
     <div className="landing">
       <section className="landing-hero">
         <div className="container landing-hero-inner">
           <div className="landing-hero-left">
             <h1 className="landing-hero-headline">
-              A studio site in 10 minutes. No developers.
+              A studio site in minutes.
+              <br />
+              No developers.
             </h1>
             <p className="landing-hero-sub">
-              Pick a theme, add your work and share a link. Export as PDF whenever you want.
+              Build once. Update anytime. Share as a link or export as a PDF.
             </p>
             <div className="landing-hero-cta">
               <Link to="/app/me" className="landing-btn landing-btn-primary">
@@ -28,29 +26,25 @@ export function Landing() {
               </a>
             </div>
           </div>
-          <div className="landing-hero-preview">
+          <div className="landing-hero-preview heroPreview">
             <div className="landing-preview-card">
               <div className="landing-preview-card-top">
-                <h3 className="landing-preview-name">{anna.name}</h3>
-                <span className="landing-preview-role">{anna.role}</span>
+                <span className="landing-preview-label">Live preview</span>
               </div>
               <div className="landing-preview-thumbs">
-                {previewWorks.length > 0
-                  ? previewWorks.map((w, i) => (
-                      <div
-                        key={i}
-                        className="landing-preview-thumb"
-                        style={{
-                          backgroundImage: `url(${w.image})`,
-                          backgroundSize: "cover",
-                        }}
-                      />
-                    ))
-                  : [1, 2, 3].map((i) => (
-                      <div key={i} className="landing-preview-thumb" />
-                    ))}
+                {[
+                  "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=80",
+                  "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80",
+                  "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80",
+                ].map((src, i) => (
+                  <div
+                    key={i}
+                    className="landing-preview-thumb"
+                    style={{ backgroundImage: `url(${src})`, backgroundSize: "cover" }}
+                  />
+                ))}
               </div>
-              <p className="landing-preview-url">portfoly.app/u/{anna.slug}</p>
+              <p className="landing-preview-url">portfoly.app/u/your-name</p>
             </div>
           </div>
         </div>
@@ -85,13 +79,6 @@ export function Landing() {
                 Send a single link to clients and collaborators. Export a clean PDF when you need an attachment.
               </p>
             </div>
-          </div>
-          <div className="whyCta">
-            <div className="whyCtaBtns">
-              <Link to="/app/me" className="landing-btn landing-btn-primary">Create your page</Link>
-              <a href="#examples" className="landing-btn landing-btn-secondary">See examples</a>
-            </div>
-            <p className="whyCtaNote">Free to start • Shareable link • PDF export</p>
           </div>
         </div>
       </section>

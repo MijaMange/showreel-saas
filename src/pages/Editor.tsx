@@ -36,6 +36,7 @@ export default function Editor() {
   const [workUploading, setWorkUploading] = useState<Record<number, boolean>>({});
   const [workUploadError, setWorkUploadError] = useState<Record<number, string>>({});
   const [showLivePreview, setShowLivePreview] = useState(false);
+  const [view, setView] = useState<"edit" | "preview">("edit");
   const livePreviewContentRef = useRef<HTMLDivElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
   const workInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
@@ -183,8 +184,26 @@ export default function Editor() {
   return (
     <div className="editor" data-theme={theme.toLowerCase()}>
       <div className="editor-container">
+        <div className="editor-mobile-toggle">
+          <button
+            type="button"
+            className={`editor-toggle-btn ${view === "edit" ? "editor-toggle-btn--active" : ""}`}
+            onClick={() => setView("edit")}
+            aria-pressed={view === "edit"}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            className={`editor-toggle-btn ${view === "preview" ? "editor-toggle-btn--active" : ""}`}
+            onClick={() => setView("preview")}
+            aria-pressed={view === "preview"}
+          >
+            Preview
+          </button>
+        </div>
         <div className="editor-grid">
-          <div className="editor-controls">
+          <div className={`editor-controls editor-controls--edit ${view === "edit" ? "editor-controls--visible" : ""}`}>
             {message && (
               <div
                 className="editor-message"
@@ -371,7 +390,7 @@ export default function Editor() {
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div className="editor-actions-row">
                 <button
                   type="button"
                   className="editor-btn-secondary"
@@ -379,6 +398,15 @@ export default function Editor() {
                 >
                   Live preview
                 </button>
+                <button
+                  className="editor-save editor-save-desktop"
+                  onClick={onSave}
+                  disabled={saving || isUploading}
+                >
+                  {saving ? "Saving…" : isUploading ? "Uploading…" : "Save & preview"}
+                </button>
+              </div>
+              <div className={`editor-mobile-save-bar ${view === "edit" ? "editor-mobile-save-bar--visible" : ""}`}>
                 <button
                   className="editor-save"
                   onClick={onSave}
@@ -390,7 +418,7 @@ export default function Editor() {
             </div>
           </div>
 
-          <aside className="editor-preview">
+          <aside className={`editor-preview ${view === "preview" ? "editor-preview--visible" : ""}`}>
             <span className="editor-preview-label">Live preview</span>
             <div className="editor-preview-inner">
               <div
