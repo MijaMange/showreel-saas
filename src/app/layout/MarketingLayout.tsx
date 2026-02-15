@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { Header } from "../../components/Header/Header";
 import { seedProfilesIfEmpty } from "../profileStore";
 import { applyTheme } from "../theme";
 import { useHeaderHeight } from "../useHeaderHeight";
-import { Header } from "../../components/Header/Header";
-import "../../styles/global.css";
 import "../../styles/header.css";
+import "../../styles/marketing.css";
 
-export function Layout() {
+export function MarketingLayout() {
   const headerRef = useHeaderHeight();
 
   useEffect(() => {
@@ -16,9 +16,9 @@ export function Layout() {
   }, []);
 
   return (
-    <div className="shell app">
-      <Header ref={headerRef} variant="app" />
-      <main className="content main">
+    <div className="shell marketing">
+      <Header ref={headerRef} variant="marketing" />
+      <main className="content marketing-main">
         <Outlet />
       </main>
     </div>

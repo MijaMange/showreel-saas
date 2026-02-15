@@ -1,5 +1,8 @@
 export { Home } from './Home'
+export { Landing } from './Landing'
 export { default as Editor } from './Editor'
 export { default as Profile } from './Profile'
 export { Pro } from './Pro'
 export { Discover } from './Discover'
+export { default as Auth } from './Auth'
+export { default as Me } from './Me'

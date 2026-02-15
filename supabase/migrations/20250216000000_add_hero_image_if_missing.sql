@@ -1,0 +1,2 @@
+-- Add hero_image to profiles if missing (e.g. older migrations)
+-- alter table profiles add column if not exists hero_image text;

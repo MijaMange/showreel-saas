@@ -5,46 +5,34 @@ export function Discover() {
   const profiles = getAllProfiles();
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <h1 style={{ marginBottom: 24 }}>Discover</h1>
-      <p style={{ marginBottom: 24, opacity: 0.8 }}>Browse all profiles.</p>
+    <div className="discover">
+      <h1 className="discover-title">Discover</h1>
+      <p className="discover-sub">Browse all profiles.</p>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-          gap: 16,
-        }}
-      >
+      <div className="discover-grid">
         {profiles.map((p) => (
-          <Link
-            key={p.slug}
-            to={`/u/${p.slug}`}
-            style={{
-              border: "1px solid var(--line)",
-              borderRadius: 12,
-              padding: 16,
-              background: "var(--panel)",
-              color: "inherit",
-              textDecoration: "none",
-              transition: "border-color 0.2s",
-            }}
-          >
-            <h3 style={{ margin: "0 0 8px 0", fontSize: 1.1 }}>{p.name}</h3>
-            <p style={{ margin: 0, fontSize: 0.9, opacity: 0.8 }}>{p.role}</p>
-            <span
-              style={{
-                display: "inline-block",
-                marginTop: 8,
-                padding: "4px 10px",
-                borderRadius: 8,
-                background: "var(--line)",
-                fontSize: 0.85,
-                opacity: 0.9,
-              }}
-            >
-              {p.theme}
-            </span>
+          <Link key={p.slug} to={`/app/u/${p.slug}`} className="discover-card">
+            <div
+              className="discover-card-thumb"
+              style={
+                p.heroImage
+                  ? {
+                      backgroundImage: `url(${p.heroImage})`,
+                      backgroundSize: "cover",
+                    }
+                  : undefined
+              }
+            />
+            <div className="discover-card-body">
+              <h3 className="discover-card-name">{p.name}</h3>
+              <p className="discover-card-role">{p.role}</p>
+              <div className="discover-card-meta">
+                <span className="discover-card-theme">{p.theme}</span>
+                {p.location && (
+                  <span className="discover-card-location">{p.location}</span>
+                )}
+              </div>
+            </div>
           </Link>
         ))}
       </div>
